@@ -31,6 +31,7 @@ Route::prefix('student')->group(function () {
 Route::prefix('instructor')->group(function () {
     Route::get('/courses', [InstructorController::class, 'index'])->name('instructor.courses');
     Route::post('/courses/{course}/grades/upload', [InstructorController::class, 'uploadGrades'])->name('instructor.grades.upload');
+    Route::post('/courses/{course}/ResitExamgrades/upload', [InstructorController::class, 'uploadResitExamGrades'])->name('instructor.ResitExamgrades.upload');
     Route::get('/courses/{course}/resit-exams', [InstructorController::class, 'resitExamList'])->name('instructor.resit.exams');
     Route::get('/courses/{course}/announcement', [InstructorController::class, 'showAnnouncementForm'])->name('instructor.announcement.form');
     Route::post('/courses/{course}/announcement', [InstructorController::class, 'storeAnnouncement'])->name('instructor.announcement.store');
@@ -47,6 +48,7 @@ Route::prefix('secretary')->group(function () {
     Route::get('/courses/{course}/announcement', [SecretaryController::class, 'showAnnouncementForm'])->name('secretary.announcement.form');
     Route::post('/courses/{course}/announcement', [SecretaryController::class, 'storeAnnouncement'])->name('secretary.announcement.store');
     Route::get('/courses/{course}/announcements', [SecretaryController::class, 'showCourseAnnouncements'])->name('secretary.course.announcements');
+    Route::post('/upload-exam-dates', [SecretaryController::class, 'uploadExamDates'])->name('secretary.upload.exam.dates');
 
 
     Route::get('/login', [SecretaryAuthController::class, 'loginIndex'])->name('secretary.login');

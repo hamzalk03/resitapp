@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resit_exams', function (Blueprint $table) {
+        Schema::create('resitexam_grades', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
-            $table->date('exam_date');
-            $table->string('exam_time');
-            $table->string('exam_hall');
+            $table->string('grade');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('resit_exams');
+        Schema::dropIfExists('resitexam_grades');
     }
 };

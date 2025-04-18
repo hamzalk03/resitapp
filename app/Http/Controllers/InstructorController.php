@@ -13,6 +13,7 @@ use App\Models\Course;
 use App\Models\Student;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\GradesImport;
+use App\Imports\ResitExamGradesImport;
 use Illuminate\Support\Facades\Log;
 use App\Models\Announcement;
 
@@ -53,12 +54,33 @@ class InstructorController extends Controller
             return redirect()->route('instructor.courses')->with('error', 'There was an error uploading the grades. Please try again.');
         }
     }
+    public function uploadResitExamGrades(Request $request, Course $course)
+    {
+        $this->authorize('update', $course);
+
+        $request->validate([
+            'grades_file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new ResitExamGradesImport($course), $request->file('grades_file'));
+            return redirect()->route('instructor.courses')->with('success', 'Grades uploaded successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error uploading grades: ' . $e->getMessage());
+            return redirect()->route('instructor.courses')->with('error', 'There was an error uploading the grades. Please try again.');
+        }
+    }
 
     public function resitExamList(Course $course)
     {
         $this->authorize('view', $course);
     
-        $resitExams = Resit_exam::where('course_id', $course->id)->with('student')->get();
+        $resitExams = Resit_exam::where('course_id', $course->id)
+            ->with(['student.grades' => function ($query) use ($course) {
+                $query->where('course_id', $course->id);
+            }])
+            ->get();
+    
         $studentCount = $resitExams->count(); // Count the number of students in the resit exam
     
         return view('instructor.examlist', compact('course', 'resitExams', 'studentCount'));

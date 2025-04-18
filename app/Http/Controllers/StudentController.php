@@ -25,15 +25,16 @@ class StudentController extends Controller
     {
         $student = Auth::user(); // Get the authenticated student
         $this->authorize('view', $student); // Pass the actual student instance
-        
+    
         // Get the student's courses
         $courses = $student->courses;
         $grades = $student->grades;
-        
-        // Get all resit exams for the student
-        $resitExams = Resit_Exam::whereIn('course_id', $student->courses->pluck('id'))
-                               ->where('student_id', $student->id)
-                               ->get(); // Get resit exams for the student's courses
+        $newGrades = $student->newGrades;
+    
+        // Get all resit exams for the student, including their details
+        $resitExams = Resit_exam::with('resitexamDetails')
+                                ->where('student_id', $student->id)
+                                ->get();
     
         // Get announcements for the courses with resit exams
         $announcements = Announcement::whereIn('course_id', $resitExams->pluck('course_id'))
@@ -41,8 +42,8 @@ class StudentController extends Controller
                                       ->latest()
                                       ->get();
     
-        return view('student.index', compact('courses', 'grades', 'announcements', 'resitExams'));
-    } 
+        return view('student.index', compact('courses', 'grades', 'announcements', 'resitExams', 'newGrades'));
+    }
     
 
     

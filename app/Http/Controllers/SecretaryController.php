@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
 use App\Models\Announcement;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use App\Models\Resit_exam;
+use App\Imports\ExamDateImport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
@@ -73,6 +77,23 @@ class SecretaryController extends Controller
 
         return view('secretary.announcements', compact('course', 'announcements'));
     }
+    public function uploadExamDates(Request $request, Course $course)
+    {
+        $this->authorize('update', $course); // Ensure the secretary has permission to upload exam dates
+        $request->validate([
+            'exam_dates_file' => 'required|file|mimes:xlsx,xls',
+        ]);
+    
+        try {
+            // Import the exam dates, including exam_hall, using the ExamDateImport class
+            Excel::import(new ExamDateImport(), $request->file('exam_dates_file'));
+            return redirect()->route('secretary.courses')->with('success', 'Exam dates uploaded successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error uploading exam dates: ' . $e->getMessage());
+            return redirect()->route('secretary.courses')->with('error', 'There was an error uploading the exam dates. Please try again.');
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */

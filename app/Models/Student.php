@@ -45,7 +45,14 @@ class Student extends Authenticatable
         return $this->belongsToMany(Course::class);
     }
 
-    public function grades() {
-        return $this->hasMany(Grade::class);
+    public function grades()
+    {
+        return $this->hasMany(Grade::class, 'student_id');
     }
+    public function newGrades()
+    {
+        return $this->hasMany(ResitexamGrade::class, 'student_id');
+    }
+    
+
 }

@@ -25,4 +25,7 @@ class Resit_exam extends Model
     public function student() {
         return $this->belongsTo(Student::class);
     }
+    public function resitexamDetails() {
+        return $this->hasMany(Resitexam_detail::class, 'course_id', 'course_id');
+    }
 }

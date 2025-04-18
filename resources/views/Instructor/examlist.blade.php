@@ -13,6 +13,7 @@
         <tr>
             <th>Student Name</th>
             <th>Student ID</th>
+            <th>Grade</th> <!-- New column for grade -->
         </tr>
     </thead>
     <tbody>
@@ -20,10 +21,13 @@
             <tr>
                 <td>{{ $resitExam->student->name }}</td>
                 <td>{{ $resitExam->student->id }}</td>
+                <td>
+                    {{ $resitExam->student->grades->firstWhere('course_id', $course->id)->grade ?? 'N/A' }}
+                </td> <!-- Display grade or 'N/A' if not available -->
             </tr>
         @empty
             <tr>
-                <td colspan="2">No students found for resit exams.</td>
+                <td colspan="3">No students found for resit exams.</td>
             </tr>
         @endforelse
     </tbody>
